@@ -1,0 +1,16 @@
+name: BedrockShield
+main: sirelves\bedrockshield\Main
+version: 1.0.0
+api: 5.0.0
+author: sirelves
+website: https://github.com/sirelves/bedrock-ddos-shield
+description: Application-layer DDoS / bot-flood mitigation for PocketMine-MP (no root/OS access needed).
+commands:
+  bshield:
+    description: BedrockShield status and controls
+    usage: "/bshield <status|lockdown [off|secs]|unblock <ip>>"
+    permission: bedrockshield.command
+permissions:
+  bedrockshield.command:
+    description: Manage BedrockShield
+    default: op

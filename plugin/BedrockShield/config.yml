@@ -1,0 +1,34 @@
+# BedrockShield — application-layer flood/bot mitigation for PocketMine-MP.
+# Works without root: it blocks abusive IPs at the RakLib layer (Network::blockAddress)
+# and rate-limits logins. It does NOT replace the host's network-level DDoS protection
+# against volumetric (bandwidth) floods — that's your hosting provider's edge.
+
+# --- Per-IP login rate limit -------------------------------------------------
+# More than <login-max-attempts> pre-login attempts from one IP within
+# <login-window-seconds> → that IP is blocked for <block-seconds>.
+# A real player opens ~1 connection; bots/reconnect-floods open many.
+login-window-seconds: 10
+login-max-attempts: 6
+
+# Seconds a tripped IP stays blocked at the RakLib layer.
+block-seconds: 600
+
+# --- Global surge → lockdown -------------------------------------------------
+# If more than <surge-max-new-ips> DISTINCT new IPs try to connect within
+# <surge-window-seconds>, enter lockdown for <lockdown-seconds>: during lockdown
+# only trusted IPs (allowlist, or IPs that already logged in successfully) are let
+# in; everyone else is turned away. Defeats botnets that spread the flood thin
+# across many IPs, each under the per-IP limit.
+surge-window-seconds: 5
+surge-max-new-ips: 40
+lockdown-seconds: 120
+
+# --- Allowlist (never blocked, always allowed even in lockdown) --------------
+allowlist:
+  - 127.0.0.1
+
+# --- Optional per-session packet-rate guard (heavier; off by default) --------
+# Disconnects + blocks a logged-in session sending more than <packet-guard-max-pps>
+# packets/second. Leave off unless you see packet-spam from authenticated sessions.
+packet-guard-enabled: false
+packet-guard-max-pps: 500

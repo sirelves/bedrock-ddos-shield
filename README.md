@@ -6,6 +6,13 @@ Built and battle-tested on a live server under a real botnet flood: it absorbed 
 
 > 🇧🇷 **Versão em português mais abaixo** → [Português](#-português)
 
+## Two layers — pick what your host allows
+
+- **You control the OS (root/SSH on a VPS)** → use this, the **host-side** layer (`iptables`/`ipset`/sysctl). Strongest: drops floods in the kernel.
+- **Managed/shared host (only a plugins folder, no SSH)** → use the companion **PocketMine plugin** in [`plugin/`](plugin/) (`BedrockShield`). It defends at the RakLib/login layer without root. Your provider's edge handles the volumetric part.
+
+They're complementary; on a VPS you can run both.
+
 ---
 
 ## The problem

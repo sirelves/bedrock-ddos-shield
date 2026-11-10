@@ -2,3 +2,6 @@
 bedrock-ddos-shield.conf
 *.local
 *.log
+
+# plugin build artifact (ship via Releases, not git)
+plugin/BedrockShield.phar
