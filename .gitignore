@@ -1,0 +1,4 @@
+# Never commit a real config (it holds your Discord webhook)
+bedrock-ddos-shield.conf
+*.local
+*.log

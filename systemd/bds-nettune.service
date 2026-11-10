@@ -1,0 +1,12 @@
+[Unit]
+Description=bedrock-ddos-shield NIC tuning (RX ring + RPS)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/bds-nettune.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

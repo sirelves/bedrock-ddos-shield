@@ -1,0 +1,7 @@
+[Unit]
+Description=bedrock-ddos-shield attack report to Discord (only while attacked)
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/bds-attack-report.sh

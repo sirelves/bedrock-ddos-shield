@@ -1,0 +1,39 @@
+# bedrock-ddos-shield configuration
+# Installed to /etc/bedrock-ddos-shield.conf — edit, then:
+#   systemctl restart bds-firewall bds-watch
+#
+# EN: every script sources this file. PT-BR: todos os scripts leem este arquivo.
+
+# --- Server / network ---------------------------------------------------------
+# UDP port your Bedrock/PocketMine server listens on.
+GAME_PORT=19132
+
+# Primary NIC to read packet counters from (ip -br link show).
+IFACE=eth0
+# Optional SR-IOV virtual-function NIC (Azure/cloud). Leave empty if none.
+IFACE_VF=ens1
+
+# Friendly name shown in Discord alerts.
+SERVER_NAME="My Bedrock Server"
+
+# --- Firewall (per-IP rate limit) ---------------------------------------------
+# Max packets/sec a single source IP may send before being dropped.
+# A legit Bedrock client sends < 100 pps; 200 leaves healthy headroom.
+RATE_LIMIT=200
+RATE_BURST=400
+# Seconds an auto-blocked flooder IP stays in the ipset blocklist.
+BLOCK_TIMEOUT=3600
+
+# --- Alerts (optional) --------------------------------------------------------
+# Discord webhook URL for watchdog + attack reports. Leave empty to disable.
+DISCORD_WEBHOOK=""
+
+# Packets/sec above which the watchdog calls it a strong flood.
+PPS_CRIT=150000
+# Malicious packets dropped in a 3s sample that count as "an attack is live"
+# (used by the 5-min attack report; a legit player never triggers this).
+ATTACK_DELTA=3000
+
+# --- Net tuning ---------------------------------------------------------------
+# Hex CPU bitmask for RPS (spreading RX softirq). 3 = CPUs 0+1, f = CPUs 0-3.
+RPS_CPUS=3
