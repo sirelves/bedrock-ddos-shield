@@ -54,7 +54,9 @@ alert(){
   msg=${msg//\"/}
 
   local JSON='{"embeds":[{"title":"'"$title"'","description":"'"$msg"'","color":'"$color"',"fields":[{"name":"🎮 Server","value":"'"$ONLINE"' · '"$TPS"'/20","inline":true},{"name":"💥 Flood","value":"'"$PPS"' pps","inline":true},{"name":"🚫 Blocked IPs","value":"'"$BLOCKED"'","inline":true},{"name":"📉 Defense","value":"'"$DEF"'","inline":false}],"footer":{"text":"'"$SERVER_NAME"' watchdog · '"$(date '+%H:%M:%S')"'"}}]}'
-  curl -s -o /dev/null -m 10 -H "Content-Type: application/json" -d "$JSON" "$DISCORD_WEBHOOK"
+  # URL via stdin (-K -) so the secret webhook never appears in argv / ps.
+  printf 'url = "%s"\n' "$DISCORD_WEBHOOK" \
+    | curl -s -o /dev/null -m 10 -H "Content-Type: application/json" -d "$JSON" -K -
 }
 
 alert "watchdog started"

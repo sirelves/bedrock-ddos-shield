@@ -14,15 +14,42 @@ set -u
 CONF=/etc/bedrock-ddos-shield.conf
 [ -r "$CONF" ] && . "$CONF"
 : "${BLOCK_TIMEOUT:=3600}"
+# Space-separated IPs that must NEVER be auto-blocked (admin boxes, etc).
+: "${BLOCK_ALLOWLIST:=}"
 
 ipset create bdsblock hash:ip timeout "$BLOCK_TIMEOUT" maxelem 100000 -exist
 
+# Only block a real, routable, public IPv4. Rejects malformed octets and skips
+# loopback / RFC1918 private / link-local ranges and anything on the allowlist,
+# so a poisoned log line can't make us block our own admins or private hosts.
+valid_public_ip(){
+  local ip="$1" o a
+  IFS=. read -r -a o <<< "$ip"
+  [ "${#o[@]}" -eq 4 ] || return 1
+  for a in "${o[@]}"; do
+    case "$a" in ''|*[!0-9]*) return 1 ;; esac
+    [ "$a" -le 255 ] || return 1
+  done
+  case "$ip" in
+    0.*|127.*|10.*|169.254.*|192.168.*|255.255.255.255) return 1 ;;
+    172.1[6-9].*|172.2[0-9].*|172.3[0-1].*)              return 1 ;;
+  esac
+  for a in $BLOCK_ALLOWLIST; do [ "$ip" = "$a" ] && return 1; done
+  return 0
+}
+
 while true; do
   CID=$(docker ps -q | head -1); [ -z "$CID" ] && { sleep 5; continue; }
+  # 1) strip ANSI/charset escapes  2) match ONLY the RakLib system message
+  #    ("Bad packet from" right after the "]:" log-prefix boundary, so chat/
+  #    command text like "<Player> Bad packet from 1.2.3.4" can't inject)
+  #    3) pull the IP  4) validate before blocking.
   docker logs -f --since 2s "$CID" 2>&1 \
-    | stdbuf -oL grep -aoE "Bad packet from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" \
-    | while read -r _ _ _ ip; do
-        ipset add bdsblock "$ip" timeout "$BLOCK_TIMEOUT" -exist
+    | stdbuf -oL sed -E 's/\x1b\[[0-9;]*m//g; s/\x1b\([AB]//g' \
+    | stdbuf -oL grep -aoE '\]:[[:space:]]*Bad packet from [0-9]+(\.[0-9]+){3}' \
+    | stdbuf -oL grep -aoE '[0-9]+(\.[0-9]+){3}$' \
+    | while read -r ip; do
+        valid_public_ip "$ip" && ipset add bdsblock "$ip" timeout "$BLOCK_TIMEOUT" -exist
       done
   sleep 2
 done

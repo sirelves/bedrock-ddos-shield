@@ -23,6 +23,9 @@ RATE_LIMIT=200
 RATE_BURST=400
 # Seconds an auto-blocked flooder IP stays in the ipset blocklist.
 BLOCK_TIMEOUT=3600
+# Space-separated IPs the autoblocker must NEVER block (admin boxes, your own
+# proxy, etc). Private/loopback/link-local ranges are already never blocked.
+BLOCK_ALLOWLIST=""
 
 # --- Alerts (optional) --------------------------------------------------------
 # Discord webhook URL for watchdog + attack reports. Leave empty to disable.

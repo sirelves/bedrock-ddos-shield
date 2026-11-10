@@ -26,10 +26,14 @@ install -m 0644 sysctl/99-bds-net.conf /etc/sysctl.d/
 sysctl --system >/dev/null
 
 echo "==> Installing config (kept if it already exists)"
+# 0600 root:root — the config holds your Discord webhook; keep it non-readable
+# to other local users.
 if [ -f /etc/bedrock-ddos-shield.conf ]; then
-  echo "   /etc/bedrock-ddos-shield.conf already present — left untouched."
+  chmod 0600 /etc/bedrock-ddos-shield.conf
+  chown root:root /etc/bedrock-ddos-shield.conf 2>/dev/null || true
+  echo "   /etc/bedrock-ddos-shield.conf already present — left untouched (perms set to 0600)."
 else
-  install -m 0644 bedrock-ddos-shield.conf.example /etc/bedrock-ddos-shield.conf
+  install -m 0600 -o root -g root bedrock-ddos-shield.conf.example /etc/bedrock-ddos-shield.conf
   echo "   Created /etc/bedrock-ddos-shield.conf — EDIT IT before relying on alerts."
 fi
 

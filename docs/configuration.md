@@ -17,6 +17,7 @@ The attack-report timer and nettune pick up changes on their next run / reboot (
 | `RATE_LIMIT` | `200` | Max pps per source IP before DROP | Máx. pps por IP antes do DROP |
 | `RATE_BURST` | `400` | hashlimit burst allowance | Folga de burst do hashlimit |
 | `BLOCK_TIMEOUT` | `3600` | Seconds a flooder IP stays blocked | Segundos que o IP fica bloqueado |
+| `BLOCK_ALLOWLIST` | *(empty)* | IPs never to auto-block (space-sep) | IPs que nunca são bloqueados (sep. por espaço) |
 | `DISCORD_WEBHOOK` | *(empty)* | Webhook URL; empty disables alerts | URL do webhook; vazio desliga alertas |
 | `PPS_CRIT` | `150000` | pps the watchdog calls a strong flood | pps que o watchdog chama de flood forte |
 | `ATTACK_DELTA` | `3000` | Malicious drops/3s that count as "attacked" | Drops maliciosos/3s que contam como "sob ataque" |

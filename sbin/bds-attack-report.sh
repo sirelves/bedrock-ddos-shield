@@ -43,4 +43,6 @@ else
 fi
 
 JSON='{"embeds":[{"title":"⚠️ DDoS attack in progress — '"$SERVER_NAME"'","color":'"$COLOR"',"fields":[{"name":"🎮 Server","value":"**'"$ONLINE"'** · **'"$TPS"'/20**","inline":false},{"name":"💥 Total flood","value":"'"$PPS"' pps","inline":true},{"name":"🔥 Junk blocked","value":"'"$MALPPS"' pps","inline":true},{"name":"🚫 Blocked IPs","value":"'"$BLOCKED"'","inline":true},{"name":"🧱 Total dropped","value":"'"$DROPPED"'","inline":true},{"name":"📉 Defense status","value":"'"$HEALTH"'","inline":false}],"footer":{"text":"Auto report every 5 min while the attack lasts"}}]}'
-curl -s -o /dev/null -m 10 -H "Content-Type: application/json" -d "$JSON" "$DISCORD_WEBHOOK"
+# URL via stdin (-K -) so the secret webhook never appears in argv / ps.
+printf 'url = "%s"\n' "$DISCORD_WEBHOOK" \
+  | curl -s -o /dev/null -m 10 -H "Content-Type: application/json" -d "$JSON" -K -
