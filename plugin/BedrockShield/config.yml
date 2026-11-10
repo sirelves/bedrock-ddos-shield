@@ -13,6 +13,11 @@ login-max-attempts: 6
 # Seconds a tripped IP stays blocked at the RakLib layer.
 block-seconds: 600
 
+# How long an IP stays "trusted" after a player on it actually joins. Trust lets
+# an IP through lockdown; it EXPIRES after this many seconds and is revoked if the
+# IP is ever blocked — so a one-time join can't whitelist an IP forever.
+trust-ttl-seconds: 3600
+
 # --- Global surge → lockdown -------------------------------------------------
 # If more than <surge-max-new-ips> DISTINCT new IPs try to connect within
 # <surge-window-seconds>, enter lockdown for <lockdown-seconds>: during lockdown
