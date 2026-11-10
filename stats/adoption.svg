@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="360" viewBox="0 0 820 360" font-family="-apple-system,Segoe UI,Roboto,sans-serif">
+<rect x="0.5" y="0.5" width="819" height="359" rx="10" fill="#ffffff" stroke="#d0d7de"/>
+<text x="48" y="30" font-size="16" font-weight="700" fill="#1f2328">bedrock-ddos-shield — adoção</text>
+<text x="804" y="30" font-size="11" fill="#8c959f" text-anchor="end">atualizado 2026-11-10</text>
+<line x1="48" y1="286.0" x2="800" y2="286.0" stroke="#eaeef2"/>
+<text x="40" y="290.0" font-size="11" fill="#8c959f" text-anchor="end">0</text>
+<line x1="48" y1="50.0" x2="800" y2="50.0" stroke="#eaeef2"/>
+<text x="40" y="54.0" font-size="11" fill="#8c959f" text-anchor="end">1</text>
+<text x="48.0" y="306.0" font-size="11" fill="#8c959f" text-anchor="start">10-28</text>
+<text x="452.9" y="306.0" font-size="11" fill="#8c959f" text-anchor="middle">11-04</text>
+<text x="800.0" y="306.0" font-size="11" fill="#8c959f" text-anchor="end">11-10</text>
+<polyline points="48.0,286.0 105.8,286.0 163.7,286.0 221.5,286.0 279.4,286.0 337.2,286.0 395.1,286.0 452.9,286.0 510.8,286.0 568.6,286.0 626.5,286.0 684.3,286.0 742.2,286.0 800.0,286.0" fill="none" stroke="#0969da" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="48.0" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="105.8" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="163.7" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="221.5" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="279.4" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="337.2" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="395.1" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="452.9" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="510.8" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="568.6" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="626.5" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="684.3" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="742.2" cy="286.0" r="3" fill="#0969da"/>
+<circle cx="800.0" cy="286.0" r="3" fill="#0969da"/>
+<polyline points="48.0,286.0 105.8,286.0 163.7,286.0 221.5,286.0 279.4,286.0 337.2,286.0 395.1,286.0 452.9,286.0 510.8,286.0 568.6,286.0 626.5,286.0 684.3,286.0 742.2,286.0 800.0,286.0" fill="none" stroke="#1a7f37" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="48.0" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="105.8" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="163.7" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="221.5" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="279.4" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="337.2" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="395.1" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="452.9" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="510.8" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="568.6" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="626.5" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="684.3" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="742.2" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="800.0" cy="286.0" r="3" fill="#1a7f37"/>
+<circle cx="800.0" cy="50.0" r="3" fill="#8250df"/>
+<circle cx="800.0" cy="286.0" r="3" fill="#bf8700"/>
+<rect x="48.0" y="322.0" width="11" height="11" rx="3" fill="#0969da"/>
+<text x="65.0" y="332.0" font-size="12" fill="#57606a">clones/dia <tspan font-weight="700" fill="#0969da">0</tspan></text>
+<rect x="236.0" y="322.0" width="11" height="11" rx="3" fill="#1a7f37"/>
+<text x="253.0" y="332.0" font-size="12" fill="#57606a">views/dia <tspan font-weight="700" fill="#1a7f37">0</tspan></text>
+<rect x="424.0" y="322.0" width="11" height="11" rx="3" fill="#8250df"/>
+<text x="441.0" y="332.0" font-size="12" fill="#57606a">downloads <tspan font-weight="700" fill="#8250df">1</tspan></text>
+<rect x="612.0" y="322.0" width="11" height="11" rx="3" fill="#bf8700"/>
+<text x="629.0" y="332.0" font-size="12" fill="#57606a">stars <tspan font-weight="700" fill="#bf8700">0</tspan></text>
+<text x="48" y="348" font-size="10" fill="#afb8c1">sem telemetria — métricas públicas do GitHub, atualizadas diariamente</text>
+</svg>

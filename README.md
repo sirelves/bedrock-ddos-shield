@@ -83,6 +83,12 @@ Also recommended alongside: firewall off your SSH/panel ports from the public in
 
 Defaults are deliberately conservative (`RATE_LIMIT=200` pps/IP). Lower it and you risk clipping legit players on bad mobile connections; raise it and you let more junk through per source. Measure with the counters above before changing. More in [`docs/configuration.md`](docs/configuration.md).
 
+## Adoption
+
+![adoption](stats/adoption.svg)
+
+Updated daily from **public GitHub metrics** (release downloads + clone/view traffic). No telemetry, no phone-home — the server itself never calls home; the numbers come from GitHub and live in [`stats/`](stats/).
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Use it, fork it, no warranty.

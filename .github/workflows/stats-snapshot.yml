@@ -29,6 +29,9 @@ jobs:
           GH_TOKEN: ${{ secrets.STATS_TOKEN || secrets.GITHUB_TOKEN }}
         run: python3 scripts/snapshot.py "${{ github.repository }}"
 
+      - name: Render chart
+        run: python3 scripts/plot.py
+
       - name: Commit if changed
         run: |
           git config user.name  "github-actions[bot]"
