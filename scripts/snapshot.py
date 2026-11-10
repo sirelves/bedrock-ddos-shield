@@ -12,41 +12,55 @@ and merges them into CSVs under stats/, keyed by date so history is never lost.
                       (phar downloads, stars, forks).
 
 No telemetry, no phone-home: everything here is data GitHub already collects
-about the public repo. Reads the repo via `gh api` (token from the environment).
+about the public repo. Pure stdlib (urllib) — no `gh` needed, so it runs the
+same in GitHub Actions and in a plain cron on a server.
+
+Auth: a token in $GH_TOKEN or $GITHUB_TOKEN is used if present. Downloads and
+stars are public (work with no token); the traffic API needs push access, so
+without a token the clone/view columns are simply left unchanged.
 
 Usage: scripts/snapshot.py  [owner/repo]   (defaults to sirelves/bedrock-ddos-shield)
 """
 import csv
 import json
 import os
-import subprocess
 import sys
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 
 REPO = sys.argv[1] if len(sys.argv) > 1 else "sirelves/bedrock-ddos-shield"
 STATS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "stats")
+TOKEN = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
 
 
 def gh_api(path):
-    """Call `gh api <path>` and return parsed JSON, or None on failure."""
+    """GET https://api.github.com/<path> as JSON, or None on failure."""
+    req = urllib.request.Request(
+        "https://api.github.com/" + path,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "bedrock-ddos-shield-stats",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
+    if TOKEN:
+        req.add_header("Authorization", "Bearer " + TOKEN)
     try:
-        out = subprocess.run(
-            ["gh", "api", path, "-H", "Accept: application/vnd.github+json"],
-            capture_output=True, text=True, check=True,
-        ).stdout
-        return json.loads(out) if out.strip() else None
-    except subprocess.CalledProcessError as e:
-        sys.stderr.write(f"warn: gh api {path} failed: {e.stderr.strip()[:200]}\n")
-        return None
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        sys.stderr.write(f"warn: GET {path} -> HTTP {e.code}\n")
+    except Exception as e:  # noqa: BLE001 — never fail the whole snapshot on one call
+        sys.stderr.write(f"warn: GET {path} failed: {e}\n")
+    return None
 
 
 def load_csv(path):
     if not os.path.exists(path):
-        return {}, []
+        return {}
     with open(path, newline="") as f:
-        rows = list(csv.DictReader(f))
-    header = rows[0].keys() if rows else []
-    return {r["date"]: r for r in rows}, list(header)
+        return {r["date"]: r for r in csv.DictReader(f)}
 
 
 def write_csv(path, header, rows_by_date):
@@ -63,37 +77,30 @@ def main():
 
     # ---- traffic.csv (per-day, upsert from the rolling 14-day window) ----
     traffic_path = os.path.join(STATS_DIR, "traffic.csv")
-    traffic, _ = load_csv(traffic_path)
+    traffic = load_csv(traffic_path)
     tr_header = ["date", "clones", "clones_unique", "views", "views_unique"]
 
-    clones = gh_api(f"repos/{REPO}/traffic/clones") or {}
-    views = gh_api(f"repos/{REPO}/traffic/views") or {}
+    def upsert(payload_key, count_col, uniq_col):
+        data = gh_api(f"repos/{REPO}/traffic/{payload_key}") or {}
+        for day in data.get(payload_key, []):
+            d = day["timestamp"][:10]
+            row = traffic.get(d) or {k: "" for k in tr_header}
+            row["date"] = d
+            row[count_col] = day["count"]
+            row[uniq_col] = day["uniques"]
+            traffic[d] = row
 
-    # fill clones then views, keeping any field already set
-    for day in clones.get("clones", []):
-        d = day["timestamp"][:10]
-        row = traffic.get(d, {k: "" for k in tr_header})
-        row["date"] = d
-        row["clones"] = day["count"]
-        row["clones_unique"] = day["uniques"]
-        traffic[d] = row
-    for day in views.get("views", []):
-        d = day["timestamp"][:10]
-        row = traffic.get(d, {k: "" for k in tr_header})
-        row["date"] = d
-        row["views"] = day["count"]
-        row["views_unique"] = day["uniques"]
-        traffic[d] = row
+    upsert("clones", "clones", "clones_unique")
+    upsert("views", "views", "views_unique")
 
-    # normalize missing cells
-    for d, row in traffic.items():
+    for row in traffic.values():  # normalize any missing cells
         for k in tr_header:
             row.setdefault(k, "")
     write_csv(traffic_path, tr_header, traffic)
 
     # ---- totals.csv (cumulative snapshot, one row per run day) ----
     totals_path = os.path.join(STATS_DIR, "totals.csv")
-    totals, _ = load_csv(totals_path)
+    totals = load_csv(totals_path)
     to_header = ["date", "phar_downloads", "stars", "forks", "watchers"]
 
     releases = gh_api(f"repos/{REPO}/releases") or []
@@ -115,8 +122,8 @@ def main():
     write_csv(totals_path, to_header, totals)
 
     print(f"{today}: phar_downloads={phar_dl} "
-          f"stars={repo.get('stargazers_count')} "
-          f"traffic_days={len(traffic)}")
+          f"stars={repo.get('stargazers_count')} traffic_days={len(traffic)} "
+          f"token={'yes' if TOKEN else 'no'}")
 
 
 if __name__ == "__main__":
