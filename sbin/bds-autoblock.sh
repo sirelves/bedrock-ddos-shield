@@ -27,7 +27,8 @@ valid_public_ip(){
   IFS=. read -r -a o <<< "$ip"
   [ "${#o[@]}" -eq 4 ] || return 1
   for a in "${o[@]}"; do
-    case "$a" in ''|*[!0-9]*) return 1 ;; esac
+    case "$a" in ''|*[!0-9]*) return 1 ;; esac   # digits only
+    case "$a" in 0?*) return 1 ;; esac           # no leading zero (octal/decimal ambiguity)
     [ "$a" -le 255 ] || return 1
   done
   case "$ip" in
@@ -40,14 +41,19 @@ valid_public_ip(){
 
 while true; do
   CID=$(docker ps -q | head -1); [ -z "$CID" ] && { sleep 5; continue; }
-  # 1) strip ANSI/charset escapes  2) match ONLY the RakLib system message
-  #    ("Bad packet from" right after the "]:" log-prefix boundary, so chat/
-  #    command text like "<Player> Bad packet from 1.2.3.4" can't inject)
-  #    3) pull the IP  4) validate before blocking.
+  # 1) strip ANSI/charset escapes.
+  # 2) split each line on the FIRST "]: " — the logger's own message boundary,
+  #    which only the server emits. The real message lands in field $2; any "]:"
+  #    a player types in chat/commands pushes their text into $3+, so it can't
+  #    masquerade as the system "Bad packet from" line. Require $2 to START with
+  #    it, then take the 4th word as the IP.
+  # 3) validate (public IPv4, no leading zeros, allowlist) before blocking.
   docker logs -f --since 2s "$CID" 2>&1 \
     | stdbuf -oL sed -E 's/\x1b\[[0-9;]*m//g; s/\x1b\([AB]//g' \
-    | stdbuf -oL grep -aoE '\]:[[:space:]]*Bad packet from [0-9]+(\.[0-9]+){3}' \
-    | stdbuf -oL grep -aoE '[0-9]+(\.[0-9]+){3}$' \
+    | stdbuf -oL awk -F']: ' '
+        $2 ~ /^Bad packet from [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/ {
+          split($2, f, " "); print f[4]; fflush()
+        }' \
     | while read -r ip; do
         valid_public_ip "$ip" && ipset add bdsblock "$ip" timeout "$BLOCK_TIMEOUT" -exist
       done
